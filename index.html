@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>词韵入声拾遗</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Noto Serif SC", "SimSun", serif;
+    }
+    
+    body {
+      background: linear-gradient(to bottom, #f8f4e9, #e8e4d9);
+      color: #333;
+      line-height: 1.6;
+      padding-top: 170px; /* 为固定导航栏预留空间 */
+      min-height: 100vh;
+    }
+    
+    /* 固定导航栏容器 */
+    .fixed-nav-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+      padding: 15px 0;
+    }
+    
+    /* 当页面滚动时的导航栏样式 */
+    .fixed-nav-container.scrolled {
+      padding: 8px 0;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.95);
+    }
+    
+    header {
+      text-align: center;
+      padding: 30px 0;
+      background: #3a2618;
+      color: #f8f4e9;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="50%" y="50%" font-size="30" text-anchor="middle" dominant-baseline="middle" fill="white">詞韻</text></svg>');
+      background-repeat: repeat;
+      z-index: 0;
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: 8px;
+      margin-bottom: 15px;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.7);
+      position: relative;
+      z-index: 1;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .controls {
+      max-width: 900px;
+      margin: 0 auto 35px;
+      padding: 25px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+      border: 1px solid #d9d0bf;
+    }
+    
+    .search-box {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: center;
+    }
+    
+    .search-box label {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #3a2618;
+      flex-shrink: 0;
+    }
+    
+    .search-box input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid #c9bda3;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      background: #fcfaf5;
+      transition: all 0.3s;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .search-box input:focus {
+      border-color: #8c5e3c;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(140, 94, 60, 0.25);
+    }
+    
+    .search-box button {
+      background: linear-gradient(to bottom, #8c5e3c, #6d482c);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    .search-box button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      background: linear-gradient(to bottom, #9d6e4c, #7d583c);
+    }
+    
+    .search-box button:active {
+      transform: translateY(1px);
+    }
+    
+    .rhymepartition {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      padding: 15px;
+      background: #f8f4e9;
+      border-radius: 8px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .tag-button {
+      background: linear-gradient(to bottom, #d4c8b1, #c4b8a1);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-width: 110px;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+      font-weight: 500;
+    }
+    
+    .tag-button:hover {
+      background: linear-gradient(to bottom, #8c5e3c, #7c4e2c);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .tag-button.active-section {
+      background: linear-gradient(to bottom, #8c5e3c, #6d482c);
+      color: white;
+      box-shadow: 0 0 0 3px rgba(140, 94, 60, 0.35);
+      font-weight: 600;
+      transform: scale(1.05);
+    }
+    
+    .article {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 35px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      border: 1px solid #e0d8c8;
+      margin-bottom: 50px;
+    }
+    
+    .article h2 {
+      color: #3a2618;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #d4c8b1;
+      font-size: 1.9rem;
+      letter-spacing: 2px;
+      position: relative;
+      padding-top: 20px;
+    }
+    
+    .article h2::after {
+      content: "";
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 120px;
+      height: 3px;
+      background: #8c5e3c;
+    }
+    
+    .article p {
+      font-size: 1.7rem;
+      line-height: 2.6;
+      margin-bottom: 30px;
+      text-align: justify;
+      padding: 15px;
+      background: #fcfaf5;
+      border-radius: 8px;
+      border: 1px solid #e8e0d0;
+    }
+    
+    .char {
+      display: inline-block;
+      padding: 0 4px;
+      margin: 0 1px;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+      border-radius: 4px;
+      min-width: 1.4em;
+      text-align: center;
+    }
+    
+    .char:hover {
+      background-color: #e8e4d9;
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .char.active {
+      background: linear-gradient(to bottom, #8c5e3c, #6d482c);
+      color: white;
+      transform: scale(1.25);
+      z-index: 10;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    .char.highlight {
+      background: linear-gradient(to bottom, #ff9800, #e68a00);
+      color: white;
+      animation: pulse 1.5s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      z-index: 5;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(255, 152, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+    }
+    
+    .stats {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f4e9;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      border: 1px solid #e0d8c8;
+    }
+    
+    .highlight-info {
+      margin: 20px 0;
+      padding: 15px;
+      background: linear-gradient(to right, #e8f5e9, #d8e5d9);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 500;
+      border: 1px solid #c8d5c9;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 25px;
+      color: #8c5e3c;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      background: #f8f4e9;
+      border-radius: 10px;
+      margin: 20px;
+    }
+    
+    .search-result {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .rhyme-tag {
+      background: linear-gradient(to bottom, #8c5e3c, #6d482c);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 1rem;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding-top: 250px;
+      }
+      
+      .article {
+        padding: 5px;
+      }
+      
+      .article p {
+        font-size: 1.5rem;
+        line-height: 2.3;
+      }
+      
+      .search-box {
+        flex-direction: column;
+      }
+      
+      .tag-button {
+        padding: 8px 15px;
+        font-size: 1rem;
+        min-width: 90px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .fixed-nav-container {
+        padding: 10px 0;
+      }
+    }
+    
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(to bottom, #8c5e3c, #6d482c);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      z-index: 999;
+    }
+    
+    .back-to-top.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-5px);
+    }
+  </style>
+</head>
+<body>
+  <!-- 固定导航栏容器 -->
+  <div class="fixed-nav-container" id="fixedNavContainer">
+    <section class="rhymepartition" id="rhymeNav">
+      <button onclick="scrollToSection('uk')" class="tag-button">一 屋沃</button>
+      <button onclick="scrollToSection('awk')" class="tag-button">二 覺藥</button>
+      <button onclick="scrollToSection('ut')" class="tag-button">三 物沒</button>
+      <button onclick="scrollToSection('iut')" class="tag-button">四 術屈</button>
+      <button onclick="scrollToSection('it')" class="tag-button">五 質迄</button>
+      <button onclick="scrollToSection('ip')" class="tag-button">六 緝立</button>
+      <button onclick="scrollToSection('iak')" class="tag-button">七 錫職</button>
+      <button onclick="scrollToSection('ek')" class="tag-button">八 德陌</button>
+      <button onclick="scrollToSection('aet')" class="tag-button">九 曷黠</button>
+      <button onclick="scrollToSection('ot')" class="tag-button">十 末月</button>
+      <button onclick="scrollToSection('iet')" class="tag-button">十一 屑薛</button>
+      <button onclick="scrollToSection('iep')" class="tag-button">十二 葉帖</button>
+      <button onclick="scrollToSection('aep')" class="tag-button">十三 合恰</button>
+    </section>
+  </div>
+  
+  <main>
+    <div style="padding-top: 20px;"></div>
+    <header>
+      <h1>词韵入声拾遗</h1>
+      <div class="subtitle">宋代汉语韵书 · 入声字检索系统</div>
+      <p style="padding-top: 10px;">宋代漢語中入聲的押韻情況極為復雜，使用者可按照自己的喜好和音值任意取押。<br>本韻書僅標明作者推薦通押範圍。<p>
+    </header>
+    
+    <div class="controls">
+      <div class="search-box">
+        <label for="search-input">请输入韵字：</label>
+        <input type="text" id="search-input" placeholder="输入要搜索的汉字...">
+        <button id="search-btn">查找</button>
+      </div>
+      
+      <div class="stats">
+        <div style="display: none;">
+        匹配数: <span id="match-count">0</span> | 
+        涉及韵部: <span id="section-count">0</span>
+        </div>
+        <ol style="list-style-position: inside;">
+          <li>宋词用韵通常较宽。古人把元音相近，韵尾相同的韵部合并，称为一“摄”。一摄之中的韵部可以任意取押。</li>
+          <li>相同摄（或者宋朝已合并的摄）标注在右下角。如果本韵书中多个韵部可以归到一个摄之中，将会使用相同颜色标注背景。摄内同用规则不再写出。</li>
+          <li>为了不分得太过琐细，一些更小的韵部已经合并。</li>
+          <li>拟音参考unt文章<a href='https://zhuanlan.zhihu.com/p/498778513' style="color: #3a2618;">《声音唱和图》音系完全解析</a></li>
+        </ol>
+      </div>
+      
+      <div class="highlight-info" id="highlight-info">请输入汉字进行搜索</div>
+    </div>
+    
+    <section class="article">
+      <div>
+        <h2>一 屋沃 [uk]</h2>
+        <p id="uk"></p>
+        <p id="ok"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为通摄入声（/uk/）</h3>
+      </div>
+      <div>
+        <h2>二 覺藥 [ɔk]</h2>
+        <p id="awk"></p>
+        <p id="ak"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为宕江摄入声（/ak/）</h3>
+      </div>
+      <div style="background-color: #c8d5c9 ;border: #c8d5c9 solid 30px;">
+        <h2>三 物沒 [ut]</h2>
+        <p id="ut"></p>
+        <p id="uet"></p>
+      
+        <h2>四 術屈 [yt]</h2>
+        <p id="iut"></p>
+        <p id="uit"></p>
+
+        <h2>五 質迄 [it]</h2><cite>質迄-緝立-錫職三韵可通押</cite>
+        <p id="it"></p>
+        <p id="rit"></p>
+        <p id="rt"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为臻摄入声（/ɨt/）</h3>
+      </div>
+      <div>
+        <h2>六 緝立 [ip]</h2>
+        <cite>質迄-緝立-錫職三韵可通押</cite>
+        <p id="ip"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为深摄入声（/ip/）</h3>
+      </div>
+      <div style="background-color: #c8ced5 ;border: #c8ced5 solid 30px;">
+        <h2>七 錫職 [ik]</h2>
+        <cite>質迄-緝立-錫職三韵可通押</cite>
+        <p id="iak"></p>
+        <p id="eek"></p>
+        <p id="iek"></p>
+        <p id="yk"></p>
+
+        <h2>八 德陌 [ek]</h2>
+        <p id="ek"></p>
+        <p id="aek"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为曾梗摄入声（/ek/）</h3>
+      </div>
+      </div>
+      <div style="background-color: #d5c8c8 ;border: #d5c8c8 solid 30px;">
+        <h2>九 曷黠 [at]</h2>
+        <cite>曷黠-合恰二韵略可通押</cite>
+        <p id="aet"></p>
+        <p id="at"></p>
+        
+        <h2>十 末月 [ɔt]</h2><cite>该韵和下一韵更倾向于一组（押韵距离更近）</cite>
+        <p id="ot"></p>
+      
+        <h2>十一 屑薛 [ɛt]</h2><cite>屑薛-葉帖二韵可通押</cite>
+        <p id="iet"></p>
+        <h3 style="text-align: right;padding-bottom: 30px;">此部为山摄入声（/at/）</h3>
+      </div>
+      <div style="background-color: #c8d5c9 ;border: #c8d5c9 solid 30px;">
+        <h2>十二 葉帖 [ɛp]</h2>
+        <cite>屑薛-葉帖二韵可通押</cite>
+        <p id="iep"></p>
+        
+        <h2>十三 合恰 [ap]</h2>
+        <cite>曷黠-合恰二韵略可通押</cite>
+        <p id="aep"></p>
+        <p id="ap"></p>
+        <h3 style="text-align: right;">此部为咸摄入声（/ap/）</h3>
+      </div>
+    </section>
+    
+    <footer>
+      <p>词韵入声拾遗 · 望尘居士 · © 2025</p>
+      <p style="margin-top: 10px; font-size: 0.9rem;">本工具旨在帮助古音创作，所有内容仅供参考</p>
+    </footer>
+  </main>
+  
+  <!-- 返回顶部按钮 -->
+  <div class="back-to-top" id="backToTop">
+    ↑
+  </div>
+  
+  <script>
+    function wrapCharacters(content) {
+      let charIndex = 0;
+      const processedContent = content
+        .split('')
+        .map(char => {
+          // 跳过空格和标点符号（中英文）
+          if (char.trim() === '' || /[\s，。、；：！？,.!?;:()]/.test(char)) {
+            return char;
+          }
+          
+          // 为每个字符创建带索引的span
+          const span = `<span class="char" data-char="${char}" data-index="${charIndex++}">${char}</span>`;
+          return span;
+        })
+        .join('');
+      
+      return processedContent;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // 韵字内容
+      const uk = "竹屋谷目木熟腹哭菊服肉独福速鹿逐麓禄肃轴宿牧卜筑六陆族毂沐祝穀馥读斛築犊叔牍缩粥复掬簇蹙育伏覆秃復曲淑穆蓄渎碌矗幅戮縠扑镞燠漉竺菽瀑蓿撲蔌椟恧簌鞠簏鵩塾睦蹴谡蝠黩鹜觫霂煜澳仆複夙郁畜餗辘槭洑朴孰麴浊濮蔔辐衄匊角樸鬻輻毓舳讟樕倏僇暴醭啄槲曝蝮箙稑鞫昱盝俶朒輹蔟匐蹜彧滀蓼韣碡囿告踧熇髑毣柚琭㳤睩鵴龊袱柷忸茯葍澓菔慉摝䍡苜楅剭瀫蓛䤋搐遬䘵䎘副薁瘯殰勠穋㝛觳榖鹔虙橚鱐䉛豖簶螰缪踀鮛䃤瑴䩮嘼嗀䔎喌趚儥梀涑骕蹗鏕錥皾贕鵱鵚莤閦噈焀䀲鋉腛鳆虪縬摵阿摍䃚䱙㕰䪁堉䛢稢朷濲藗椈䮷璛璹";
+      const ok = "绿玉俗足烛续粟束促局辱躅录鹄欲触蜀毒浴旭曲瞩狱属酷笃箓渌沃醁赎勖督溽褥斸嘱缛梏跼鹆北纛峪瘃菉蓐蠋騄顼仆趣牿告鄏挶䠱幞㒒襮喾歜裻鋈鳿檋輂逯藚熇锔趗䒼斶媷虑䕽臅俈㩴㯮匤憟梮襆";
+      const awk = "学岳朔渥幄角濯邈觉握璞剥确琢卓壳斲雹擢槊荦鷟捉驳浊喔数桷啄榷乐朴駮诼灂搉樸龊珏啅埆较鸴峃涿踔镯鸑倬搦药偓㲉爆桌椓娖翯穱悫跑鸐浞礐戳謈擉硞㱿斮懪墣㩧箾㧻眊斠趵捔鋜棹飑礭嚗瞀觳碻瓝豰欶噣齱穛皃搠鳆掿晫烞嗍瑴傕骲㓸韄攴";
+      const ak = "落薄鹤阁壑寞郭托酌漠泊略脚恶作乐雀廓託却昨弱跃缚洛鹊萼约索著诺削爵钥错着络橐谑博幕箔铄药虐藿箨嚼柝灼铎若霍礴凿怍瘼愕屩鹗烁籥酢锷勺攫搏杓度噱粕酪崿鳄彴蠖涸各掠斫莫雘讬貉绰恪鄂镬瀹拓疟谔穫垩珞魄膊雒椁萚膜笮噩骆箬摸扩爚矱爝臛镈腭襮玃缴堮格遌㟧泺烙妁礡醵获鞟泽咢亳饦搁龠钁斮蠚焯礿蒻矍獲彍艧硌䋏蹻郝镆躩臄陌霩熇逴芍皭柞暯矐踱皵㠋跞篗鑮煿戄臒岝漷靃瞙䧿鄚糳悫汋欂蒦昔㗁燋躇皬㹱轹攉嗃婼婥䨥㖾咯鷇迮貜謞碏犦蒪飵䋤䱜蠼袥䟑䙏琧檴仢侂嬳湂塻汑猎鄀㜰䁨踖䥬蝁䚥";
+      const ut = "物不佛拂绂祓黻绋勿綍韨咈弗芴刜岉昒帗艴笰冹";
+      const uet = "骨没窟忽兀笏突渤鹘勃惚殁柮窣屼滑猝杌矹矻咄搰腯馞淈悖硉汨浡凸孛愲榾揬嗢艴抇饽㶿㪍棁胐匫莈肭";
+      const iut = "掘卒崒捽堀鬱(郁)厥䬂泏䬍崛";
+      const uit = "出术術律述橘恤秫黜潏戌汩朮怵卒绌鹬崒茁繂遹繘獝䫻霱訹銊聿踤沭窋膟驈捽矞㧒";
+      const it = "质嫉泌日笔室一失密疾逸毕匹膝帙漆吉溢七栗必秩诘礩跸蜜乙悉慄唧荜弼谧叱昵轶篥窒镒骘壹侄锧苾驲佚姪抶蛭桎肸铚罼凓韠筚堲飶佾鳦衵泆咥䣛佶蟋耴溧紩蒺桼姞翐蔤挃觱珌拮熚㮚妷饆庢馝鷅晊沕駜䟆柣㗚䭿滭㮿窸楖佖秷䤉䵒䘌眣柒";
+      const rit = "乞屹讫仡吃沕迄汔釳肸";
+      const rt = "瑟栉虱蟀飋瀄璱䜉㘉龁纥蜶麧";
+      const ip = "急立入湿集泣及邑十涩习蛰拾笠粒什汲揖袭给级吸执汁笈隰挹絷戢葺岌浥辑悒缉翕熠裛楫唈伋噏褶濈廿潗蕺雭歙霫槢苙孴馵㵫熻芨咠霵钑潝漐歰鳛飁㧀㞏卌煜啃闟俋湆礏雴㬤箿岦皀諿圾㠍䓃㞚";
+      const iak = "石迹碧夕尺席惜屐益璧赤癖驿剧辟昔隙戟掷液僻释积易舄逆籍适脊掖碛斥瘠腋奕绎怿只译藉汐鲫弈炙蹠蹐绤斁穸螫蜴埸帟摭襞襫峄祏奭刺踯躄腊亦借擿擗嗌醳磶虩耤霹塉鼫齸撠圛晹潟睗襀㴒㡿縌䘸";
+      const eek = "壁寂笛敌滴历觅激戚绩檄击锡的沥雳觌涤砾鹢枥惕析镝羃狄淅荻栎劈甓溺剔皪逖籴幂迪靮嫡皙䍥趯觋甋惄阋瓅艗踢澼籊蜥裼䍽蹢樀疬鼊赥倜墼緆䥶薂鼏㭊鼜镉秝苈蚸濗䤙糸";
+      const iek = "息媳力极识翼直忆食职棘臆逼饰织稷即拭匿陟蚀式亿亟植抑敕殖弋熄轼饬殛赩屴翊湜愊薏寔杙嶷唧埴愎偪襋幅衋遫湢栻翌鷘副㘈繶仂腷芅釴慗樴蕀黓膱㚤淔瀷癔蒠熼䐈皕";
+      const yk = "役疫阒鵙鴃殈狊域阈洫罭棫淢緎侐㽣";
+      const ek = "得国黑墨北贼刻德默勒惑则特塞克肋忒蜮慝泐踣劾嘿匐僰纆墄螣裓尅剋扐或蠈蟘淂鲗阞餩冒㥶䘃菔竻";
+      const aek = "这色射硕侧测恻厕仄穑昃啬崱轖畟㳁荝稄客白宅隔策陌伯柏窄百脉翮迫泽麦责额册厄获坼拆帛獲赫谪革择帻拍魄格擘画舶索磔珀膈檗啧貊划扼赜帼摘阨箦馘骼㶁迮核栅摵咋薜婳覈虢哑湱蝈霢喀砉槅剨蓦峉齰筴鬲掴阸㗲愬嚄觡齚滆貘㼟翟嗝佰襗蚱舴泎䌟䇲啯洦詻謮㩇覛敀㳻㧖繴焃";
+      const aet = "发發髮伐襪罚擦筏阀垡瞂颰䎳闼达剌萨辣粝獭躠挞拶䌨拔摋澾捺妲呾跶攃羍靼炟荙㒓札八刹察黠轧戛铡刮煞猾秸哳圠瞎扎揠嘎蚻刷茁汃窡嗗豽颉圿䕓劼㓤螖榝䝟扴䀨䦪帓㳐帕咶紥磍擖哵窫猰痆硈娺䯉";
+      const at = "阏渴葛褐割遏轕鞨頞鹖曷蘖毼齾嶭胺䡾㵧堨獦䯋";
+      const ot = "月阙袜樾钺粤蕨越刖曰橛劂蟨軏鳜撅蚏狘扤鷢玥阔末活脱豁夺钵聒拨抹掇跋括秣魃斡栝撮筈茇捋敚鱍軷妺钹袯濊靺髺鏺鸹剟裰佸泧犮姡胈适焥妭莌繓馛捾秳";
+      const iet = "谒歇讷竭羯讦揭蠍碣核雪别绝灭血热结拙穴说洁铁节裂列缺烈辙悦舌诀杰设彻竭屑决哲咽切阅折劣冽澈缬掣辍瞥阕窃蘖孽玦鳖埒啜鴂歇截爇撷齧绁垤泄挈揭耋跌嵲撤谲泬孑餮刷涅吷迭亵糵薛撇蜺洌蔑缀鐍桀抉蕝噎苶瓞惙浙臬契楔闑卨闭嶭絜蠛拽㓗碣绖歠棁臲篾页僣襭掇凸隉媟蹩晢捏呐衊觖莂霓茁岊趐緤颉锲蛚醊昳捩偈驖茢轶揲巀楶哔咥蜇摰蠥禼㧙丿朅焫幭㙞渫桔拮蛣畷覈褐讦谳碟瘪锊疖悊颲准篞㞕䥫迾槷搣辥褉棳蠘䁾䨮批蛭憋鷩橇趹僪蠮襒瞲孓駃嫳挒罬佚䕵䫾暼䆷䚢絬㗧䖦䠥㿱瞮揳滐镻㖶馝覕暍猲糏钀蝎楬扒㗫";
+      const iep = "叶葉接蝶叠楫帖捷涉箧惬颊堞妾侠铗鬣睫牒靥屧浃协荚蹑摄慑贴燮挟摺镊馌猎躞烨晔捻谍跕䃳业劫怯锸嶪胁邺硖恊嗋喋愶熁蜐胠喢㾀詟蹀氎辄艓躐嗫褶擪聂怗厌箑㲲韘衱笈惵褋魇裛梜屟霎苶喋歙籋楪霅呫讘襵菨折炸鞢婕欇錜筴鍱擸偞崨椄㬪䈉䌜䈎鲽蛱渫䐑倢踕䩞巤㩶㯿䌌挕䠟㱌㫸誱";
+      const aep = "卡榻塌塔答杂腊衲纳匝飒蜡踏沓荅遝拉帀蹋鞳搭靸蒳鲽嗒趿阘漯噆遢咂嚃剳䗶誻涾馺濌軜卅嘁镴鞜傝䑽䈳㗳䶀䞙䕹法甲峡洽匣鸭狎压乏插狭夹霎袷箑押恰柙呷歃劄帢翣掐胛裌霅陜祫眨啑扱鵊跲郏凹筴㰱䶎萐玾庘㡊䆘䩡姂烚";
+      const ap = "合阖榼閤蛤鸽盍盒嗑欱匌唈㔩盖搕韐廅耠篕䆟铪闸鞈哈钾";
+
+
+
+
+
+
+      // 将文本拆分为单字并包裹span
+      const rhymelist = ['uk','ok','awk','ak','ut','uet','iut','uit','it','rit','rt','ip','iak','iek','eek','iek','yk','ek','aek','aet','at','ot','iet','iep','aep','ap'];
+      
+      // 韵部与按钮映射
+      const sectionToButtonMap = {
+        'uk': '一 屋沃',
+        'ok': '一 屋沃',
+        'awk': '二 覺藥',
+        'ak': '二 覺藥',
+        'ut': '三 物沒',
+        'uet': '三 物沒',
+        'iut': '四 術屈',
+        'uit': '四 術屈',
+        'it': '五 質迄',
+        'rit': '五 質迄',
+        'rt': '五 質迄',
+        'ip': '六 緝立',
+        'iak': '七 錫職',
+        'iek': '七 錫職',
+        'eek': '七 錫職',
+        'yk': '七 錫職',
+        'ek': '八 德陌',
+        'aek': '八 德陌',
+        'aet': '九 曷黠',
+        'at': '九 曷黠',
+        'iet': '十一 屑薛',
+        'ot': '十 末月',
+        'iep': '十二 葉帖',
+        'aep': '十三 合恰',
+        'ap': '十三 合恰'
+      };
+      
+      // 存储所有韵部段落
+      const sectionParagraphs = {};
+      
+      function inject(id, content = eval(id)) {
+        const contentDiv = document.getElementById(id);
+        contentDiv.innerHTML = wrapCharacters(content);
+        sectionParagraphs[id] = contentDiv;
+        
+        // 点击字符跳转功能
+        contentDiv.addEventListener('click', function(event) {
+          if (event.target.classList.contains('char')) {
+            const char = event.target.dataset.char;
+            const baseUrl = "https://sou-yun.cn/QR.aspx?c=";
+            
+            // 移除之前的高亮
+            document.querySelectorAll('.char.active').forEach(el => {
+              el.classList.remove('active');
+            });
+            
+            // 添加点击效果
+            event.target.classList.add('active');
+            
+            // 构造URL并跳转
+            if (baseUrl) {
+              const encodedChar = encodeURIComponent(char);
+              const newUrl = baseUrl + encodedChar;
+              window.location.href = newUrl;
+            }
+          }
+        });
+      }
+      
+      // 注入所有韵字内容
+      for (let i = 0; i < rhymelist.length; i++) {
+        inject(rhymelist[i]);
+      }
+      
+      // 搜索定位功能
+      const searchInput = document.getElementById('search-input');
+      const searchBtn = document.getElementById('search-btn');
+      const matchCountSpan = document.getElementById('match-count');
+      const sectionCountSpan = document.getElementById('section-count');
+      const highlightInfo = document.getElementById('highlight-info');
+      
+      // 存储当前搜索结果
+      let currentMatches = [];
+      let currentMatchedSections = new Set();
+      
+      searchBtn.addEventListener('click', function() {
+        const searchChar = searchInput.value.trim();
+        
+        if (!searchChar) {
+          alert('请输入要搜索的汉字');
+          return;
+        }
+        
+        if (searchChar.length > 1) {
+          alert('请输入单个汉字');
+          return;
+        }
+        
+        // 清除之前的高亮
+        clearHighlights();
+        
+        // 查找所有匹配的字符
+        currentMatches = Array.from(document.querySelectorAll(`.char[data-char="${searchChar}"]`));
+        const matchCount = currentMatches.length;
+        
+        if (matchCount === 0) {
+          alert(`未找到字符 "${searchChar}"`);
+          matchCountSpan.textContent = '0';
+          sectionCountSpan.textContent = '0';
+          highlightInfo.textContent = `未找到匹配项: "${searchChar}"`;
+          return;
+        }
+        
+        // 更新匹配统计
+        matchCountSpan.textContent = matchCount;
+        
+        // 高亮所有匹配项
+        currentMatches.forEach(match => {
+          match.classList.add('highlight');
+        });
+        
+        // 收集所有匹配的韵部
+        currentMatchedSections = new Set();
+        currentMatches.forEach(match => {
+          const pElement = match.closest('p');
+          if (pElement) {
+            currentMatchedSections.add(pElement.id);
+          }
+        });
+        
+        // 高亮所有匹配的韵部按钮
+        highlightMatchedButtons();
+        
+        // 更新统计信息
+        const sectionCount = currentMatchedSections.size;
+        sectionCountSpan.textContent = sectionCount;
+        
+        // 更新提示信息
+        highlightInfo.innerHTML = `找到 <strong>${matchCount}</strong> 个匹配项: "${searchChar}" | 涉及 <strong>${sectionCount}</strong> 个韵部`;
+        
+        // 显示匹配的韵部标签
+        const resultContainer = document.createElement('div');
+        resultContainer.className = 'search-result';
+        resultContainer.innerHTML = '<div>匹配韵部:</div>';
+        
+        currentMatchedSections.forEach(sectionId => {
+          const sectionName = sectionToButtonMap[sectionId];
+          if (sectionName) {
+            const tag = document.createElement('div');
+            tag.className = 'rhyme-tag';
+            tag.textContent = sectionName;
+            resultContainer.appendChild(tag);
+          }
+        });
+        
+        highlightInfo.appendChild(resultContainer);
+        
+        // 如果有匹配项，滚动到第一个
+        if (currentMatches.length > 0) {
+          currentMatches[0].scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          });
+        }
+      });
+      
+      // 清除所有高亮
+      function clearHighlights() {
+        // 清除字符高亮
+        document.querySelectorAll('.char.highlight').forEach(el => {
+          el.classList.remove('highlight');
+        });
+        
+        // 清除按钮高亮
+        document.querySelectorAll('.tag-button.active-section').forEach(btn => {
+          btn.classList.remove('active-section');
+        });
+        
+        // 清除结果容器
+        const existingResult = highlightInfo.querySelector('.search-result');
+        if (existingResult) {
+          existingResult.remove();
+        }
+      }
+      
+      // 高亮匹配的韵部按钮
+      function highlightMatchedButtons() {
+        currentMatchedSections.forEach(sectionId => {
+          const sectionName = sectionToButtonMap[sectionId];
+          if (sectionName) {
+            const buttons = document.querySelectorAll('.tag-button');
+            buttons.forEach(button => {
+              if (button.textContent === sectionName) {
+                button.classList.add('active-section');
+              }
+            });
+          }
+        });
+      }
+      
+      // 支持按Enter键搜索
+      searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+          searchBtn.click();
+        }
+      });
+      
+      
+      // 滚动监听 - 固定导航栏
+      const fixedNavContainer = document.getElementById('fixedNavContainer');
+      const rhymeNav = document.getElementById('rhymeNav');
+      
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 100) {
+          fixedNavContainer.classList.add('scrolled');
+        } else {
+          fixedNavContainer.classList.remove('scrolled');
+        }
+        
+        // 显示/隐藏返回顶部按钮
+        const backToTop = document.getElementById('backToTop');
+        if (window.scrollY > 500) {
+          backToTop.classList.add('show');
+        } else {
+          backToTop.classList.remove('show');
+        }
+      });
+      
+      // 返回顶部功能
+      document.getElementById('backToTop').addEventListener('click', function() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    function scrollToSection(sectionId) {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    // 计算偏移量（向上偏移50px）
+    const offset = 250;
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - offset;
+    
+    // 使用平滑滚动到偏移后的位置
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }
+}
+  </script>
+</body>
+</html>
